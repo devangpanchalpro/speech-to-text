@@ -1,0 +1,20 @@
+# Python items
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.example
+
+# Local data
+audio_files/
+outputs/
+
+# IDE/System
+.vscode/
+.idea/
+.DS_Store
+
+# Streamlit
+.streamlit/

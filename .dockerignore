@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+venv/
+ENV/
+audio_files/*
+!audio_files/.gitkeep
+outputs/*
+!outputs/.gitkeep
+.git/
+.gitignore
