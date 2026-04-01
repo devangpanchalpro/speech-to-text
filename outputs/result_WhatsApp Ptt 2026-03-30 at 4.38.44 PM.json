@@ -5,7 +5,7 @@
         "detected_language": "gu-IN"
     },
     "transcript": "મારું નામ વિવાક મંચાલજા એન્ડ મને છેલ્લા 3 4 દિવસથી તાવનો અંધરસ વધુ થાય છે અને વોમિટિંગ થાય છે, પ્લસ મારા ફાધરને ડાયાબિટીસ, કોલેસ્ટ્રોલ એન્ડ બીજી અન્ય ઘણી બીમારીઓ છે, સો હાઉ કેન આઈ રિઝોલ્વ ધેટ?",
-    "transcript_english": "My name is Vivak Manchalja. For the last 3-4 days, I have had a fever and increasing constipation, along with vomiting. Additionally, my father has diabetes, high cholesterol, and many other illnesses. So, how can I resolve that?",
+    "transcript_english": "My name is Vivak Manchhalja. For the past 3-4 days, I've been experiencing increased fever and constipation, and also vomiting. Additionally, my father has diabetes, high cholesterol, and many other illnesses. So, how can I resolve that?",
     "identification": {
         "doctor": {
             "name": "Unknown",
@@ -19,7 +19,7 @@
             {
                 "speaker": "Patient (Vivak Manchalja)",
                 "text": "મારું નામ વિવાક મંચાલજા એન્ડ મને છેલ્લા 3 4 દિવસથી તાવનો અંધરસ વધુ થાય છે અને વોમિટિંગ થાય છે, પ્લસ મારા ફાધરને ડાયાબિટીસ, કોલેસ્ટ્રોલ એન્ડ બીજી અન્ય ઘણી બીમારીઓ છે, સો હાઉ કેન આઈ રિઝોલ્વ ધેટ?",
-                "translated_text": "My name is Vivak Manchalja and I have had fever and more constipation for the last 3-4 days, and I am vomiting. Plus, my father has diabetes, cholesterol, and many other diseases, so how can I resolve that?"
+                "translated_text": "My name is Vivak Manchalja, and for the last 3-4 days, I've been having more fever and constipation, and vomiting. Plus, my father has diabetes, cholesterol, and many other illnesses. So how can I resolve that?"
             }
         ]
     },
@@ -50,6 +50,13 @@
                         "since": "",
                         "notes": "",
                         "status": "Active"
+                    },
+                    {
+                        "name": "Other illnesses",
+                        "who": "Father",
+                        "since": "",
+                        "notes": "Patient mentioned 'many other illnesses' for father.",
+                        "status": "Active"
                     }
                 ],
                 "lifestyleHabits": [],
@@ -73,7 +80,7 @@
                 "severity": "",
                 "laterality": "",
                 "finding_status": "Present",
-                "details": ""
+                "details": "Increased fever for the past 3-4 days."
             },
             {
                 "name": "Constipation",
@@ -84,7 +91,7 @@
                 "severity": "",
                 "laterality": "",
                 "finding_status": "Present",
-                "details": "increasing"
+                "details": "Constipation for the past 3-4 days."
             },
             {
                 "name": "Vomiting",
@@ -95,9 +102,9 @@
                 "severity": "",
                 "laterality": "",
                 "finding_status": "Present",
-                "details": ""
+                "details": "Vomiting for the past 3-4 days."
             }
         ],
-        "prescriptionNotes": "Patient asks how to resolve the current symptoms and family history related issues."
+        "prescriptionNotes": ""
     }
 }

@@ -13,7 +13,12 @@ st.markdown("Upload a patient-doctor conversation to transcribe and identify spe
 # Sidebar for API Key
 with st.sidebar:
     st.header("Settings")
-    api_key = st.text_input("Sarvam AI API Key", value=os.environ.get("SARVAM_API_KEY", "eka_4187d52726f94769b30566d6"), type="password").strip()
+    api_key = st.text_input("Sarvam AI API Key", value=os.environ.get("SARVAM_API_KEY", ""), type="password").strip()
+    
+    if not api_key:
+        st.error("❌ Sarvam AI API key is required for transcription.")
+    else:
+        st.success("✅ Sarvam AI enabled for transcription!")
     
     # Pre-fill Gemini API key from environment if available
     default_gemini_key = os.environ.get("GEMINI_API_KEY", "")

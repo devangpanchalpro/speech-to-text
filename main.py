@@ -57,17 +57,10 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
         if not gemini_api_key:
             gemini_api_key = None
 
-        # 3. Role & Name Identification (Gemini optionally integrated)
+        # 3. Translation (Source to English) — Do this FIRST so English text is available for all later stages
         print("\n" + "="*50)
-        print("🔍 STAGE 3: Identifying Roles & Names")
+        print("🌎 STAGE 3: Translating to English")
         print("="*50)
-        role_id = RoleIdentifier()
-        identification = role_id.identify_roles_and_names(
-            transcript_data['transcript'], 
-            gemini_api_key=gemini_api_key
-        )
-
-        # 4. Translation (Source to English) — ALWAYS provide English version if possible
         translated_english = ""
         source_transcript = transcript_data['transcript']
 
@@ -75,8 +68,6 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
             try:
                 from src.analysis.gemini_client import GeminiClient
                 gemini = GeminiClient(gemini_api_key)
-                # Translate from auto-detected or specified source to English
-                print("🌎 STAGE 4: Translating to English...")
                 translated_english = gemini.translate_text(source_transcript, source_language='auto', target_language='English')
                 
                 if translated_english == source_transcript and source_transcript.strip():
@@ -87,6 +78,16 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
         else:
             print("ℹ️ No Gemini API key provided; English version will match original.")
             translated_english = source_transcript
+
+        # 4. Role & Name Identification (uses both original + English transcript)
+        print("\n" + "="*50)
+        print("🔍 STAGE 4: Identifying Roles & Names")
+        print("="*50)
+        role_id = RoleIdentifier()
+        identification = role_id.identify_roles_and_names(
+            transcript_data['transcript'], 
+            gemini_api_key=gemini_api_key
+        )
 
         # 5. Casesheet Extraction (Dynamic EMR JSON)
         print("\n" + "="*50)
@@ -104,7 +105,6 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
                 )
             except Exception as e:
                 print(f"⚠️ Casesheet extraction error: {e}")
-                # Fallback to empty EMR casesheet
                 casesheet_data = CasesheetExtractor()._get_empty_casesheet()
         else:
             print("ℹ️ No Gemini API key provided; skipping casesheet extraction.")

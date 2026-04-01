@@ -5,8 +5,7 @@
         "detected_language": "en-IN"
     },
     "transcript": "Just examination shows RAS in the basis which is a little unusual and diffuse bronchi on both lung fields. We asked for a lung function test which shows so and so, so and so, so and so. He also asked for a pheno which is showing an elevated fraction. Overall diagnosis is uncontrolled asthma. At this point he would be treated.",
-    "transcript_original": "Just examination shows RAS in the basis which is a little unusual and diffuse bronchi on both lung fields. We asked for a lung function test which shows so and so, so and so, so and so. He also asked for a pheno which is showing an elevated fraction. Overall diagnosis is uncontrolled asthma. At this point he would be treated.",
-    "transcript_english": "Physical examination revealed RAS in the bases, which is somewhat unusual, along with diffuse bronchial findings in both lung fields. A lung function test was requested, revealing multiple abnormalities. A FeNO test was also requested, which showed an elevated fraction. The overall diagnosis is uncontrolled asthma. Treatment will be initiated at this point.",
+    "transcript_english": "Clinical examination revealed rales at the bases, which is somewhat unusual, along with diffuse wheezing on both lung fields. Lung function testing was performed, which showed specific findings. Fractional exhaled nitric oxide (FeNO) testing was also requested, revealing an elevated fraction. The overall diagnosis is uncontrolled asthma, and treatment will be initiated.",
     "identification": {
         "doctor": {
             "name": "Unknown",
@@ -27,12 +26,12 @@
     "casesheet": {
         "advices": [
             {
-                "text": "Treatment will be initiated at this point."
+                "text": "Treatment will be initiated."
             }
         ],
         "diagnosis": [
             {
-                "name": "Uncontrolled asthma",
+                "name": "uncontrolled asthma",
                 "since": {
                     "value": 0,
                     "unit": ""
@@ -49,28 +48,28 @@
         },
         "PrescribedTests": [
             {
-                "name": "Lung function test",
+                "name": "Lung function testing",
                 "remark": ""
             },
             {
-                "name": "FeNO test",
+                "name": "Fractional exhaled nitric oxide (FeNO) testing",
                 "remark": ""
             }
         ],
         "DiagnosticResults": [
             {
-                "name": "Lung function test",
+                "name": "Lung function testing",
                 "unit": "",
                 "value": "",
                 "interpretation": "Abnormal",
-                "remark": "multiple abnormalities"
+                "remark": "showed specific findings"
             },
             {
-                "name": "FeNO test",
+                "name": "Fractional exhaled nitric oxide (FeNO)",
                 "unit": "",
-                "value": "elevated fraction",
+                "value": "",
                 "interpretation": "High",
-                "remark": ""
+                "remark": "elevated fraction"
             }
         ],
         "medicalHistory": {
@@ -88,8 +87,12 @@
         },
         "examinations": [
             {
-                "name": "Physical examination",
-                "notes": "RAS in the bases, which is somewhat unusual, along with diffuse bronchial findings in both lung fields."
+                "name": "Rales",
+                "notes": "at the bases, somewhat unusual"
+            },
+            {
+                "name": "Wheezing",
+                "notes": "diffuse, on both lung fields"
             }
         ],
         "bodyVitalSigns": [],

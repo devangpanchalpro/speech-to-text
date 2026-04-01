@@ -8,9 +8,9 @@ class SarvamClient:
     API_URL = "https://api.sarvam.ai/speech-to-text"
     
     def __init__(self, api_key=None):
-        self.api_key = (api_key or os.environ.get("SARVAM_API_KEY", "sk_xeq60znl_CmW7mTLFf72FGr6pcy6pGvBG")).strip()
+        self.api_key = (api_key or os.environ.get("SARVAM_API_KEY", "")).strip()
         if not self.api_key:
-            raise ValueError("Sarvam API Key is required.")
+            raise ValueError("Sarvam API Key is required. Please provide a valid API key in settings.")
         
     def transcribe(self, audio_file_path, language_code="unknown"):
         """
