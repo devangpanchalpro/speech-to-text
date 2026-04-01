@@ -1,0 +1,5 @@
+streamlit
+requests
+pydub
+imageio-ffmpeg
+google-genai

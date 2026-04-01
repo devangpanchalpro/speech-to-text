@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./audio_files:/app/audio_files
+      - ./outputs:/app/outputs
+    environment:
+      - SARVAM_API_KEY=${SARVAM_API_KEY:-sk_xeq60znl_CmW7mTLFf72FGr6pcy6pGvBG}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    stdin_open: true
+    tty: true
