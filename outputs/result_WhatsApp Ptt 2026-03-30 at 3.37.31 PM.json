@@ -1,0 +1,73 @@
+{
+    "metadata": {
+        "original_file": "WhatsApp Ptt 2026-03-30 at 3.37.31 PM.ogg",
+        "processed_file": "WhatsApp Ptt 2026-03-30 at 3.37.31 PM.mp3",
+        "detected_language": "en-IN"
+    },
+    "transcript": "The neoplastic mass was surgically removed in May 2012 and the histological examination showed a synovial sarcoma with close surgical margins. Consequently, adjuvant chemotherapy with doxorubicin and efosformate was administered for a total of six cycles.",
+    "transcript_original": "The neoplastic mass was surgically removed in May 2012 and the histological examination showed a synovial sarcoma with close surgical margins. Consequently, adjuvant chemotherapy with doxorubicin and efosformate was administered for a total of six cycles.",
+    "transcript_english": "The neoplastic mass was surgically removed in May 2012 and the histological examination showed a synovial sarcoma with close surgical margins. Consequently, adjuvant chemotherapy with doxorubicin and efosformate was administered for a total of six cycles.",
+    "identification": {
+        "doctor": {
+            "name": "Unknown",
+            "speaker_id": null
+        },
+        "patient": {
+            "name": "Unknown",
+            "speaker_id": null
+        },
+        "conversation": []
+    },
+    "casesheet": {
+        "advices": [],
+        "diagnosis": [],
+        "followup": {
+            "date": "",
+            "notes": ""
+        },
+        "PrescribedTests": [],
+        "DiagnosticResults": [
+            {
+                "name": "histological examination",
+                "unit": "",
+                "value": "",
+                "interpretation": "synovial sarcoma with close surgical margins",
+                "remark": ""
+            }
+        ],
+        "medicalHistory": {
+            "patientHistory": {
+                "patientMedicalConditions": [
+                    {
+                        "name": "synovial sarcoma",
+                        "since": "May 2012",
+                        "status": "Inactive",
+                        "notes": "with close surgical margins"
+                    }
+                ],
+                "currentMedications": [],
+                "familyHistory": [],
+                "lifestyleHabits": [],
+                "foodOtherAllergy": [],
+                "pastProcedures": [
+                    {
+                        "name": "Surgical removal of neoplastic mass",
+                        "status": "Inactive"
+                    },
+                    {
+                        "name": "Adjuvant chemotherapy with doxorubicin and efosformate for six cycles",
+                        "status": "Inactive"
+                    }
+                ],
+                "recentTravelHistory": [],
+                "vaccinationHistory": [],
+                "drugAllergy": []
+            }
+        },
+        "examinations": [],
+        "bodyVitalSigns": [],
+        "medications": [],
+        "symptoms": [],
+        "prescriptionNotes": ""
+    }
+}

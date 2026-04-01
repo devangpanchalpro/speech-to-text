@@ -1,0 +1,103 @@
+{
+    "metadata": {
+        "original_file": "WhatsApp Ptt 2026-03-30 at 4.38.44 PM.ogg",
+        "processed_file": "WhatsApp Ptt 2026-03-30 at 4.38.44 PM.mp3",
+        "detected_language": "gu-IN"
+    },
+    "transcript": "મારું નામ વિવાક મંચાલજા એન્ડ મને છેલ્લા 3 4 દિવસથી તાવનો અંધરસ વધુ થાય છે અને વોમિટિંગ થાય છે, પ્લસ મારા ફાધરને ડાયાબિટીસ, કોલેસ્ટ્રોલ એન્ડ બીજી અન્ય ઘણી બીમારીઓ છે, સો હાઉ કેન આઈ રિઝોલ્વ ધેટ?",
+    "transcript_english": "My name is Vivak Manchalja. For the last 3-4 days, I have had a fever and increasing constipation, along with vomiting. Additionally, my father has diabetes, high cholesterol, and many other illnesses. So, how can I resolve that?",
+    "identification": {
+        "doctor": {
+            "name": "Unknown",
+            "speaker_id": null
+        },
+        "patient": {
+            "name": "Vivak Manchalja",
+            "speaker_id": null
+        },
+        "conversation": [
+            {
+                "speaker": "Patient (Vivak Manchalja)",
+                "text": "મારું નામ વિવાક મંચાલજા એન્ડ મને છેલ્લા 3 4 દિવસથી તાવનો અંધરસ વધુ થાય છે અને વોમિટિંગ થાય છે, પ્લસ મારા ફાધરને ડાયાબિટીસ, કોલેસ્ટ્રોલ એન્ડ બીજી અન્ય ઘણી બીમારીઓ છે, સો હાઉ કેન આઈ રિઝોલ્વ ધેટ?",
+                "translated_text": "My name is Vivak Manchalja and I have had fever and more constipation for the last 3-4 days, and I am vomiting. Plus, my father has diabetes, cholesterol, and many other diseases, so how can I resolve that?"
+            }
+        ]
+    },
+    "casesheet": {
+        "advices": [],
+        "diagnosis": [],
+        "followup": {
+            "date": "",
+            "notes": ""
+        },
+        "PrescribedTests": [],
+        "DiagnosticResults": [],
+        "medicalHistory": {
+            "patientHistory": {
+                "patientMedicalConditions": [],
+                "currentMedications": [],
+                "familyHistory": [
+                    {
+                        "name": "Diabetes",
+                        "who": "Father",
+                        "since": "",
+                        "notes": "",
+                        "status": "Active"
+                    },
+                    {
+                        "name": "High Cholesterol",
+                        "who": "Father",
+                        "since": "",
+                        "notes": "",
+                        "status": "Active"
+                    }
+                ],
+                "lifestyleHabits": [],
+                "foodOtherAllergy": [],
+                "pastProcedures": [],
+                "recentTravelHistory": [],
+                "vaccinationHistory": [],
+                "drugAllergy": []
+            }
+        },
+        "examinations": [],
+        "bodyVitalSigns": [],
+        "medications": [],
+        "symptoms": [
+            {
+                "name": "Fever",
+                "since": {
+                    "value": 3,
+                    "unit": "days"
+                },
+                "severity": "",
+                "laterality": "",
+                "finding_status": "Present",
+                "details": ""
+            },
+            {
+                "name": "Constipation",
+                "since": {
+                    "value": 3,
+                    "unit": "days"
+                },
+                "severity": "",
+                "laterality": "",
+                "finding_status": "Present",
+                "details": "increasing"
+            },
+            {
+                "name": "Vomiting",
+                "since": {
+                    "value": 3,
+                    "unit": "days"
+                },
+                "severity": "",
+                "laterality": "",
+                "finding_status": "Present",
+                "details": ""
+            }
+        ],
+        "prescriptionNotes": "Patient asks how to resolve the current symptoms and family history related issues."
+    }
+}

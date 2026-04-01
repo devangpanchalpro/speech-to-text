@@ -1,0 +1,63 @@
+{
+    "metadata": {
+        "original_file": "WhatsApp Ptt 2026-03-30 at 3.17.42 PM.ogg",
+        "processed_file": "WhatsApp Ptt 2026-03-30 at 3.17.42 PM.mp3",
+        "detected_language": "en-IN"
+    },
+    "transcript": "Ultrasound image of the nipple of a lactating breast. Ducts can be observed in the nipple as hypoechoic tubular structures. Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment.",
+    "transcript_original": "Ultrasound image of the nipple of a lactating breast. Ducts can be observed in the nipple as hypoechoic tubular structures. Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment.",
+    "transcript_english": "Ultrasound image of the nipple of a lactating breast. Ducts can be observed in the nipple as hypoechoic tubular structures. Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment.",
+    "identification": {
+        "doctor": {
+            "name": "Unknown",
+            "speaker_id": null
+        },
+        "patient": {
+            "name": "Unknown",
+            "speaker_id": null
+        },
+        "conversation": [
+            {
+                "speaker": "Doctor",
+                "text": "Ultrasound image of the nipple of a lactating breast. Ducts can be observed in the nipple as hypoechoic tubular structures. Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment.",
+                "translated_text": "Ultrasound image of the nipple of a lactating breast. Ducts can be observed in the nipple as hypoechoic tubular structures. Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment."
+            }
+        ]
+    },
+    "casesheet": {
+        "advices": [],
+        "diagnosis": [],
+        "followup": {
+            "date": "",
+            "notes": ""
+        },
+        "PrescribedTests": [],
+        "DiagnosticResults": [
+            {
+                "name": "Ultrasound image of the nipple of a lactating breast",
+                "unit": "",
+                "value": "",
+                "interpretation": "Ducts can be observed in the nipple as hypoechoic tubular structures.",
+                "remark": "Visualization depends upon both the size of the duct and the resolution of the ultrasound equipment."
+            }
+        ],
+        "medicalHistory": {
+            "patientHistory": {
+                "patientMedicalConditions": [],
+                "currentMedications": [],
+                "familyHistory": [],
+                "lifestyleHabits": [],
+                "foodOtherAllergy": [],
+                "pastProcedures": [],
+                "recentTravelHistory": [],
+                "vaccinationHistory": [],
+                "drugAllergy": []
+            }
+        },
+        "examinations": [],
+        "bodyVitalSigns": [],
+        "medications": [],
+        "symptoms": [],
+        "prescriptionNotes": ""
+    }
+}
