@@ -45,7 +45,6 @@ class GeminiClient:
         models_to_try = [
             "gemini-2.5-flash", 
             "gemini-2.0-flash", 
-            "gemini-1.5-flash",
         ]
         
         for model_name in models_to_try:
@@ -69,14 +68,8 @@ class GeminiClient:
                         return json.loads(response_text)
                 
             except Exception as e:
-                # If it's a quota error, model not found, or JSON error, try the next one
-                error_msg = str(e).lower()
-                if any(x in error_msg for x in ["429", "404", "resource_exhausted", "json", "delimiter", "parse"]):
-                    print(f"⚠️ {model_name} failed: {e}. Trying fallback...")
-                    continue
-                else:
-                    print(f"❌ Gemini Error ({model_name}): {e}")
-                    break
+                print(f"⚠️ Gemini Error ({model_name}): {e}. Trying fallback...")
+                continue
         
         return None
 
@@ -98,7 +91,6 @@ Text:
         models_to_try = [
             "gemini-2.5-flash", 
             "gemini-2.0-flash",
-            "gemini-1.5-flash",
         ]
 
         for model_name in models_to_try:
@@ -111,12 +103,7 @@ Text:
                 if response and response.text:
                     return response.text.strip()
             except Exception as e:
-                # If it's a quota error or model not found, try the next one
-                if any(x in str(e).lower() for x in ["429", "404", "resource_exhausted"]):
-                    print(f"⚠️ {model_name} failed: {e}. Trying fallback...")
-                    continue
-                else:
-                    print(f"❌ Gemini Translation Error ({model_name}): {e}")
-                    break
+                print(f"⚠️ Gemini Translation Error ({model_name}): {e}. Trying fallback...")
+                continue
         
         return text

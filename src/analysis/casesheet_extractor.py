@@ -207,7 +207,6 @@ class CasesheetExtractor:
         models_to_try = [
             "gemini-2.5-flash",
             "gemini-2.0-flash",
-            "gemini-1.5-flash",
         ]
 
         for model_name in models_to_try:
@@ -228,13 +227,8 @@ class CasesheetExtractor:
                         return extracted
 
             except Exception as e:
-                error_msg = str(e).lower()
-                if any(x in error_msg for x in ["429", "404", "resource_exhausted", "json", "parse"]):
-                    print(f"⚠️ {model_name} failed: {e}. Trying fallback...")
-                    continue
-                else:
-                    print(f"❌ Extraction error ({model_name}): {e}")
-                    break
+                print(f"⚠️ Extraction error ({model_name}): {e}. Trying fallback...")
+                continue
 
         print("⚠️ Could not extract casesheet. Returning empty fields.")
         return self._get_empty_casesheet()
