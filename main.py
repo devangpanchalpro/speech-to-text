@@ -61,14 +61,24 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
         print("\n" + "="*50)
         print("🌎 STAGE 3: Translating to English")
         print("="*50)
-        translated_english = ""
         source_transcript = transcript_data['transcript']
+        translated_english = source_transcript
+        
+        actual_lang = transcript_data.get('language_code', language_code)
 
-        if gemini_api_key:
+        if actual_lang.startswith('en'):
+            print(f"ℹ️ Audio is detected as English ({actual_lang}). Skipping translation.")
+            translated_english = source_transcript
+        elif api_key:
             try:
-                from src.analysis.gemini_client import GeminiClient
-                gemini = GeminiClient(gemini_api_key)
-                translated_english = gemini.translate_text(source_transcript, source_language='auto', target_language='English')
+                translated_text = client.translate_text(
+                    text=source_transcript, 
+                    source_language_code=actual_lang, 
+                    target_language_code='en-IN'
+                )
+                
+                if translated_text:
+                    translated_english = translated_text
                 
                 if translated_english == source_transcript and source_transcript.strip():
                     print("⚠️ Translation might have failed or returned original text.")
@@ -76,7 +86,7 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
                 print(f"⚠️ Translation error: {e}")
                 translated_english = source_transcript
         else:
-            print("ℹ️ No Gemini API key provided; English version will match original.")
+            print("ℹ️ No Sarvam API key provided; English version will match original.")
             translated_english = source_transcript
 
         # 4. Role & Name Identification (uses both original + English transcript)
@@ -86,7 +96,8 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
         role_id = RoleIdentifier()
         identification = role_id.identify_roles_and_names(
             transcript_data['transcript'], 
-            gemini_api_key=gemini_api_key
+            gemini_api_key=gemini_api_key,
+            actual_lang=actual_lang
         )
 
         # 5. Casesheet Extraction (Dynamic EMR JSON)

@@ -155,9 +155,9 @@ EMR_JSON_SCHEMA = {
             "details": ""
         }
     ],
-    "prescriptionNotes": ""
+    "prescriptionNotes": "",
+    "confidence_score": 0
 }
-
 
 class CasesheetExtractor:
     """Extract structured EMR casesheet from transcripts using Gemini AI."""
@@ -264,6 +264,7 @@ IMPORTANT RULES:
 - For "DiagnosticResults.interpretation", use one of: "Critically high", "Very high", "High", "Borderline high", "Normal", "Borderline low", "Low", "Very low", "Critically low", "Abnormal".
 - For status fields in medical history, use "Active" or "Inactive".
 - Use "prescriptionNotes" for any information not captured in above fields.
+- For "confidence_score", provide an integer from 0 to 100 representing how confident you are in the accuracy and completeness of this EMR extraction based on the transcript's clarity.
 - Do NOT invent or hallucinate information not present in the transcript.
 """
         return prompt
@@ -333,5 +334,6 @@ IMPORTANT RULES:
             "bodyVitalSigns": [],
             "medications": [],
             "symptoms": [],
-            "prescriptionNotes": ""
+            "prescriptionNotes": "",
+            "confidence_score": 0
         }

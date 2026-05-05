@@ -49,9 +49,47 @@ class SarvamClient:
         # For now, we use the standard transcription and check if it has segments
         return self.transcribe(audio_file_path, language_code)
 
+    def translate_text(self, text, source_language_code="hi-IN", target_language_code="en-IN"):
+        """
+        Translates text using Sarvam AI Translation API.
+        """
+        if not text or not text.strip():
+            return text
+
+        translate_url = "https://api.sarvam.ai/translate"
+        headers = {
+            "api-subscription-key": self.api_key,
+            "Content-Type": "application/json"
+        }
+        
+        # 'unknown' is not a valid language code for Sarvam translation, use 'auto'
+        if source_language_code == "unknown":
+            source_language_code = "auto"
+            
+        data = {
+            "input": text,
+            "source_language_code": source_language_code,
+            "target_language_code": target_language_code
+        }
+        
+        print(f"🌎 Translating with Sarvam API ({source_language_code} -> {target_language_code})...")
+        try:
+            response = requests.post(translate_url, headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("translated_text", text)
+            else:
+                print(f"❌ Sarvam Translate API Error: {response.status_code}")
+                print(f"Response: {response.text}")
+                return text
+        except Exception as e:
+            print(f"⚠️ Sarvam Translate Error: {e}")
+            return text
+
 if __name__ == "__main__":
     # Quick test
     client = SarvamClient()
     # Replace with a real path for testing
     # result = client.transcribe("path/to/audio.mp3")
     # print(result)
+

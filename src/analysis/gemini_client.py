@@ -13,13 +13,26 @@ class GeminiClient:
         else:
             self.client = None
 
-    def diarize_transcript(self, transcript_text: str) -> Optional[List[Dict[str, str]]]:
+    def diarize_transcript(self, transcript_text: str, actual_lang: str = "unknown") -> Optional[List[Dict[str, str]]]:
         """
         Uses Gemini to split a flat transcript into a Doctor-Patient conversation.
         Tries multiple models as fallback if one fails (e.g., due to quota).
         """
         if not self.client or not transcript_text:
             return None
+
+        if actual_lang.startswith('en'):
+            task_translation = ""
+            output_format = """[
+          {"speaker": "Doctor", "text": "..."},
+          {"speaker": "Patient (Om)", "text": "..."}
+        ]"""
+        else:
+            task_translation = "4. For each turn, provide the text in the ORIGINAL language (text) AND translate it to English (translated_text)."
+            output_format = """[
+          {"speaker": "Doctor", "text": "...", "translated_text": "..."},
+          {"speaker": "Patient (Om)", "text": "...", "translated_text": "..."}
+        ]"""
 
         prompt = f"""
         The following is a flat transcript of a conversation between a Doctor and a Patient.
@@ -29,16 +42,13 @@ class GeminiClient:
         1. Split this into a logical dialogue (turns).
         2. Identify the speaker for each turn: "Doctor" or "Patient".
         3. If names are mentioned (e.g., "My name is Om"), use the format "Patient (Om)" or "Doctor (Name)".
-        4. For each turn, provide the text in the ORIGINAL language (text) AND translate it to English (translated_text).
+        {task_translation}
         
         TRANSCRIPT:
         {transcript_text}
         
         OUTPUT FORMAT (Strict JSON Array):
-        [
-          {{"speaker": "Doctor", "text": "...", "translated_text": "..."}},
-          {{"speaker": "Patient (Om)", "text": "...", "translated_text": "..."}}
-        ]
+        {output_format}
         """
         
         # List of models to try in order of preference

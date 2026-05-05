@@ -5,7 +5,7 @@ class RoleIdentifier:
     """Identifies Doctor and Patient roles and extracts names from transcripts."""
     
     @staticmethod
-    def identify_roles_and_names(transcript_text: str, segments: Optional[List[Any]] = None, gemini_api_key: Optional[str] = None) -> Dict[str, Any]:
+    def identify_roles_and_names(transcript_text: str, segments: Optional[List[Any]] = None, gemini_api_key: Optional[str] = None, actual_lang: str = "unknown") -> Dict[str, Any]:
         """
         Analyzes transcript to identify Doctor and Patient.
         Returns a dictionary with identified roles, names, and conversation turns.
@@ -29,7 +29,7 @@ class RoleIdentifier:
             try:
                 from .gemini_client import GeminiClient
                 gemini = GeminiClient(gemini_api_key)
-                turns = gemini.diarize_transcript(text)
+                turns = gemini.diarize_transcript(text, actual_lang=actual_lang)
                 if turns:
                     conversation = turns
                     # Update names from Gemini turns
