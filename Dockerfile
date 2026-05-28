@@ -25,8 +25,8 @@ COPY . .
 # Create directories for audio files and outputs if they don't exist
 RUN mkdir -p audio_files outputs
 
-# Expose the port that Streamlit runs on
-EXPOSE 8501
+# Expose the port that FastAPI runs on
+EXPOSE 8000
 
-# Command to run the application
-CMD ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+# Command to run the FastAPI application
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

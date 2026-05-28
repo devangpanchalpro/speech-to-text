@@ -1,19 +1,4 @@
 services:
-  # Streamlit UI
-  app:
-    build: .
-    ports:
-      - "8501:8501"
-    volumes:
-      - ./audio_files:/app/audio_files
-      - ./outputs:/app/outputs
-    environment:
-      - SARVAM_API_KEY=${SARVAM_API_KEY}
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-    command: ["streamlit", "run", "app.py", "--server.port=8501", "--server.address=0.0.0.0"]
-    stdin_open: true
-    tty: true
-
   # FastAPI Server
   api:
     build: .

@@ -11,11 +11,15 @@ from main import process_audio_pipeline
 # Load environment variables
 load_dotenv()
 
+# ─── Resolve API keys once at startup from .env ───
+SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 # App setup
 app = FastAPI(
     title="CoreInventory Audio Processor API",
-    description="API for converting audio to text, diarization, and EMR casesheet extraction from doctor-patient audio conversations.",
-    version="1.0.0",
+    description="API for converting audio to text, diarization, and HMIS-compatible JSON extraction from doctor-patient audio conversations.",
+    version="2.0.0",
 )
 
 # Authentication Setup
@@ -47,44 +51,38 @@ def read_root():
 @app.post("/process-audio")
 async def process_audio(
     file: UploadFile = File(...),
-    sarvam_api_key: Optional[str] = Form(None),
-    gemini_api_key: Optional[str] = Form(None),
     language_code: Optional[str] = Form("unknown"),
     api_key: str = Depends(get_api_key)
 ):
     """
-    Process an audio file and return structured EMR JSON.
+    Process an audio file and return HMIS-compatible JSON.
     
     Uploads a doctor-patient audio conversation, transcribes it, identifies speakers,
-    translates to English, and extracts a full structured EMR casesheet.
+    translates to English, extracts structured EMR data, and converts to HMIS format.
 
     - **file**: The audio file to process (mp3, wav, mp4, ogg, m4a, flac)
-    - **sarvam_api_key**: (Optional) Sarvam AI API Key. Falls back to SARVAM_API_KEY env var.
-    - **gemini_api_key**: (Optional) Gemini API Key. Falls back to GEMINI_API_KEY env var.
-      **Required** for EMR extraction, translation, and advanced diarization.
     - **language_code**: (Optional) Language code for transcription. Defaults to 'unknown' (auto-detect).
     
-    Returns the full structured EMR JSON populated from the audio content.
+    API keys (Sarvam, Gemini) are configured server-side via .env file.
+    
+    Returns HMIS-compatible JSON populated from the audio content.
     """
     
     # Validation against empty file
     if not file.filename:
         raise HTTPException(status_code=400, detail="Empty filename uploaded")
-        
-    # Resolve API keys (use passed in form variables, fallback to env variables)
-    resolved_sarvam_key = sarvam_api_key or os.getenv("SARVAM_API_KEY")
-    resolved_gemini_key = gemini_api_key or os.getenv("GEMINI_API_KEY")
     
-    if not resolved_sarvam_key:
+    # Validate server-side keys are configured
+    if not SARVAM_API_KEY:
         raise HTTPException(
-            status_code=400, 
-            detail="Sarvam API Key is required (pass via form or set SARVAM_API_KEY in environment)."
+            status_code=500, 
+            detail="Server configuration error: SARVAM_API_KEY is not set in .env"
         )
 
-    if not resolved_gemini_key:
+    if not GEMINI_API_KEY:
         raise HTTPException(
-            status_code=400,
-            detail="Gemini API Key is required for EMR extraction (pass via form or set GEMINI_API_KEY in environment)."
+            status_code=500,
+            detail="Server configuration error: GEMINI_API_KEY is not set in .env"
         )
 
     # Save the file temporarily
@@ -98,61 +96,33 @@ async def process_audio(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded file: {str(e)}")
         
-    # Run the pipeline
+    # Run the pipeline with .env keys
     try:
         result = process_audio_pipeline(
             audio_filename=file_path,
-            api_key=resolved_sarvam_key,
-            gemini_api_key=resolved_gemini_key,
+            api_key=SARVAM_API_KEY,
+            gemini_api_key=GEMINI_API_KEY,
             language_code=language_code
         )
         
         if result is None:
             raise HTTPException(status_code=500, detail="Audio processing pipeline failed. Check backend logs.")
         
-        # Build the response with the EMR casesheet as the primary body
-        casesheet = result.get("casesheet", {})
+        # Build the response — HMIS format directly from pipeline
+        hmis_data = result.get("hmis", {})
         
-        # Ensure all EMR fields exist even if extraction missed some
-        emr_response = {
-            # ─── EMR Casesheet (Primary Output) ───
-            "advices": casesheet.get("advices", []),
-            "diagnosis": casesheet.get("diagnosis", []),
-            "followup": casesheet.get("followup", {"date": "", "notes": ""}),
-            "PrescribedTests": casesheet.get("PrescribedTests", []),
-            "DiagnosticResults": casesheet.get("DiagnosticResults", []),
-            "medicalHistory": casesheet.get("medicalHistory", {
-                "patientHistory": {
-                    "patientMedicalConditions": [],
-                    "currentMedications": [],
-                    "familyHistory": [],
-                    "lifestyleHabits": [],
-                    "foodOtherAllergy": [],
-                    "pastProcedures": [],
-                    "recentTravelHistory": [],
-                    "vaccinationHistory": [],
-                    "drugAllergy": []
-                }
-            }),
-            "examinations": casesheet.get("examinations", []),
-            "bodyVitalSigns": casesheet.get("bodyVitalSigns", []),
-            "medications": casesheet.get("medications", []),
-            "symptoms": casesheet.get("symptoms", []),
-            "prescriptionNotes": casesheet.get("prescriptionNotes", ""),
-            
-            # ─── Audio & Transcript Context ───
-            "_metadata": {
-                "original_file": result.get("metadata", {}).get("original_file", ""),
-                "detected_language": result.get("metadata", {}).get("detected_language", ""),
-                "doctor_name": result.get("identification", {}).get("doctor", {}).get("name", "Unknown"),
-                "patient_name": result.get("identification", {}).get("patient", {}).get("name", "Unknown"),
-            },
-            "_transcript": result.get("transcript", ""),
-            "_transcript_english": result.get("transcript_english", ""),
-            "_conversation": result.get("identification", {}).get("conversation", []),
+        # Add metadata for reference
+        hmis_response = hmis_data
+        hmis_response["_metadata"] = {
+            "original_file": result.get("metadata", {}).get("original_file", ""),
+            "detected_language": result.get("metadata", {}).get("detected_language", ""),
+            "doctor_name": result.get("identification", {}).get("doctor", {}).get("name", "Unknown"),
+            "patient_name": result.get("identification", {}).get("patient", {}).get("name", "Unknown"),
+            "transcript": result.get("transcript", ""),
+            "transcript_english": result.get("transcript_english", ""),
         }
         
-        return emr_response
+        return hmis_response
         
     except HTTPException:
         raise

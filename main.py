@@ -13,7 +13,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, language_code="unknown"):
     """
-    Full pipeline: Convert -> STT -> Role Identification -> JSON Output
+    Full pipeline: Convert -> STT -> Role Identification -> HMIS JSON Output
     """
     try:
         # Resolve path - carefully avoid double-prepending INPUT_DIR
@@ -100,26 +100,26 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
             actual_lang=actual_lang
         )
 
-        # 5. Casesheet Extraction (Dynamic EMR JSON)
+        # 5. HMIS JSON Extraction (Gemini directly outputs HMIS format)
         print("\n" + "="*50)
-        print("📋 STAGE 5: Casesheet Extraction (EMR Format)")
+        print("🏥 STAGE 5: HMIS JSON Extraction")
         print("="*50)
-        casesheet_data = {}
+        hmis_data = {}
         if gemini_api_key:
             try:
                 extractor = CasesheetExtractor(gemini_api_key)
-                casesheet_data = extractor.extract_casesheet(
+                hmis_data = extractor.extract_casesheet(
                     transcript=translated_english,
                     conversation=identification.get('conversation'),
                     doctor_name=identification['doctor']['name'],
                     patient_name=identification['patient']['name']
                 )
             except Exception as e:
-                print(f"⚠️ Casesheet extraction error: {e}")
-                casesheet_data = CasesheetExtractor()._get_empty_casesheet()
+                print(f"⚠️ HMIS extraction error: {e}")
+                hmis_data = CasesheetExtractor()._get_empty_hmis()
         else:
-            print("ℹ️ No Gemini API key provided; skipping casesheet extraction.")
-            casesheet_data = CasesheetExtractor()._get_empty_casesheet()
+            print("ℹ️ No Gemini API key provided; skipping HMIS extraction.")
+            hmis_data = CasesheetExtractor()._get_empty_hmis()
 
         # 6. Save Final Output
         metadata = {
@@ -133,7 +133,7 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
             "transcript": source_transcript,
             "transcript_english": translated_english,
             "identification": identification,
-            "casesheet": casesheet_data
+            "hmis": hmis_data
         }
         
         output_filename = f"result_{os.path.splitext(os.path.basename(input_path))[0]}.json"

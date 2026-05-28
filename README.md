@@ -1,59 +1,66 @@
 # CoreInventory Audio Pipeline
 
-An enhanced audio processing pipeline for transcribing multilingual conversations, identifying speaker roles (Doctor/Patient), and extracting names.
+An enhanced audio processing pipeline for transcribing multilingual conversations, identifying speaker roles (Doctor/Patient), extracting names, and generating HMIS-compatible JSON.
 
 ## Features
 -   **Multi-format Support**: Process mp3, mp4, ogg, wav, m4a, etc. (Automatic conversion to mp3).
 -   **High-Accuracy Transcription**: Powered by Sarvam AI's Saaras:v3 model.
 -   **Speaker & Role Identification**: Identifies "Doctor" and "Patient" using conversation context and name extraction.
--   **Clean Structure**: Modular codebase for easy maintenance.
+-   **HMIS JSON Output**: Directly outputs JSON compatible with the HMIS website API format.
+-   **FastAPI Server**: Production-ready REST API with API key authentication.
 
 ## Project Structure
 -   `audio_files/`: Put your input audio files here (mp3, mp4, ogg, etc.).
 -   `outputs/`: JSON results will be saved here.
 -   `src/audio/`: Audio conversion logic (requires FFmpeg).
 -   `src/stt/`: Sarvam AI Client.
--   `src/analysis/`: Speaker role and name identification.
--   `main.py`: Main entry point.
+-   `src/analysis/`: Speaker role identification, casesheet extraction, and HMIS mapping.
+-   `api.py`: FastAPI REST API server.
+-   `main.py`: Main pipeline entry point.
 
 ## Setup
 1.  **Install Dependencies**:
     ```bash
-    pip install pydub requests streamlit
+    pip install -r requirements.txt
     ```
 2.  **FFmpeg**: Ensure FFmpeg is installed and in your system PATH.
-3.  **API Key**: Set your Sarvam AI API key in the `SarvamClient` or as an environment variable `SARVAM_API_KEY`.
-
-### 🐳 Docker (Experimental - New Feature)
-The easiest way to run the application is using Docker. Ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
-
-1.  **Build and Run with Docker Compose**:
-    ```bash
-    docker-compose up --build
+3.  **Environment Variables**: Copy `.env.example` to `.env` and fill in your API keys:
     ```
-2.  **Access the App**:
-    Open your browser and go to `http://localhost:8501`.
-
-3.  **Stopping the Container**:
-    ```bash
-    docker-compose down
+    SARVAM_API_KEY=your_key
+    GEMINI_API_KEY=your_key
+    APP_API_KEY=your_api_key
     ```
-
-> [!NOTE]
-> The Docker container automatically handles FFmpeg installation and all Python dependencies.
 
 ## Usage
 
-### 🚀 Streamlit UI (Recommended)
-Launch the user-friendly interface:
+### 🚀 FastAPI Server (Recommended)
+Start the API server:
 ```bash
-python -m streamlit run app.py
+uvicorn api:app --reload --port 8000
 ```
-This allows you to upload files directly and see the results instantly.
+
+Then access the interactive API docs at `http://localhost:8000/docs`.
+
+#### API Endpoint
+```bash
+POST /process-audio
+```
+- **Headers**: `X-API-Key: your_api_key`
+- **Body** (form-data): `file` (audio file)
+- **Returns**: HMIS-compatible JSON with extracted medical data
 
 ### 💻 Command Line
-Run the pipeline with an audio file name:
+Run the pipeline directly:
 ```bash
 python main.py audio.mp3
 ```
 The result will be saved in the `outputs/` folder.
+
+### 🐳 Docker
+```bash
+docker-compose up --build
+```
+API will be available at `http://localhost:8000`.
+
+> [!NOTE]
+> The Docker container automatically handles FFmpeg installation and all Python dependencies.
