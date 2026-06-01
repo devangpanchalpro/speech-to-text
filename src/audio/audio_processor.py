@@ -5,7 +5,7 @@ import imageio_ffmpeg
 class AudioProcessor:
     """Handles audio format conversion and loading using imageio-ffmpeg directly."""
     
-    SUPPORTED_FORMATS = ['mp3', 'mp4', 'ogg', 'wav', 'm4a', 'flac']
+    SUPPORTED_FORMATS = ['mp3', 'mp4', 'ogg', 'wav', 'm4a', 'flac', 'opus']
 
     @staticmethod
     def convert_to_mp3(input_path, output_path=None):

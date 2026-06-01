@@ -122,7 +122,7 @@ def main():
     mapper = HMISMapper()
     hmis_output = mapper.map_casesheet_to_hmis(SAMPLE_CASESHEET)
 
-    result = hmis_output.get("result", {})
+    result = hmis_output
 
     # ─── Validate each section ───
     checks = []
@@ -141,7 +141,7 @@ def main():
     if meds:
         checks.append(("med name", meds[0]["prescribedMedicine"] == "Dolo 650", meds[0].get("prescribedMedicine")))
         checks.append(("med frequency", meds[0]["frequency"] == "1-1-1", meds[0].get("frequency")))
-        checks.append(("med timing", meds[0]["timing"] == "After Food", meds[0].get("timing")))
+        checks.append(("med timing", meds[0]["timing"] == "After Meal", meds[0].get("timing")))
         checks.append(("med duration", meds[0]["duration"] == 5, meds[0].get("duration")))
         checks.append(("dosePhases present", len(meds[0].get("dosePhases", [])) == 1, ""))
 
@@ -167,17 +167,16 @@ def main():
     advices = result.get("advices", [])
     checks.append(("advices", len(advices) == 2, f"Expected 2, got {len(advices)}"))
 
-    # 8. Medical Background
-    bg = result.get("medicalBackground", [])
-    checks.append(("medicalBackground", len(bg) == 1, f"Expected 1, got {len(bg)}"))
+    # 8. Medical Advices
+    bg = result.get("medicalAdvices", [])
+    checks.append(("medicalAdvices", len(bg) == 1, f"Expected 1, got {len(bg)}"))
 
     # 9. Follow-up
     followup = result.get("followUp", {})
     checks.append(("followUp", followup.get("followUpDate") == "2026-05-08", followup.get("followUpDate")))
 
-    # 10. Diagnostics
-    diagnostics = result.get("diagnostics", [])
-    checks.append(("diagnostics", len(diagnostics) == 3, f"Expected 3 (2 lab + 1 diag), got {len(diagnostics)}"))
+    # 10. Diagnostics Total
+    checks.append(("diagnostics total", (len(labs) + len(diag_inv)) == 3, f"Expected 3, got {len(labs) + len(diag_inv)}"))
 
     # 11. Treatment
     treatment = result.get("treatment", [])

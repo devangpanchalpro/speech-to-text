@@ -2,11 +2,12 @@ import os
 import shutil
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, Security, UploadFile, File, Form
+from fastapi import FastAPI, Depends, HTTPException, Security, UploadFile, File, Form, Query
 from fastapi.security.api_key import APIKeyHeader
 from dotenv import load_dotenv
 
 from main import process_audio_pipeline
+from src.database.db_manager import DatabaseManager
 
 # Load environment variables
 load_dotenv()
@@ -18,9 +19,21 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 # App setup
 app = FastAPI(
     title="CoreInventory Audio Processor API",
-    description="API for converting audio to text, diarization, and HMIS-compatible JSON extraction from doctor-patient audio conversations.",
-    version="2.0.0",
+    description="API for converting audio to text, diarization, and HMIS-compatible JSON extraction from doctor-patient audio conversations. Data is persisted to PostgreSQL.",
+    version="3.0.0",
 )
+
+# ─── Database initialization on startup ───
+@app.on_event("startup")
+def startup_db():
+    """Initialize the database table on application startup."""
+    try:
+        db = DatabaseManager()
+        db.initialize_db()
+        db.close()
+    except Exception as e:
+        print(f"⚠️ Database startup warning: {e}")
+        print("   The API will still work, but data won't be saved to PostgreSQL.")
 
 # Authentication Setup
 API_KEY_NAME = "X-API-Key"
@@ -60,7 +73,7 @@ async def process_audio(
     Uploads a doctor-patient audio conversation, transcribes it, identifies speakers,
     translates to English, extracts structured EMR data, and converts to HMIS format.
 
-    - **file**: The audio file to process (mp3, wav, mp4, ogg, m4a, flac)
+    - **file**: The audio file to process (mp3, wav, mp4, ogg, m4a, flac, opus)
     - **language_code**: (Optional) Language code for transcription. Defaults to 'unknown' (auto-detect).
     
     API keys (Sarvam, Gemini) are configured server-side via .env file.
@@ -128,3 +141,55 @@ async def process_audio(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred during processing: {str(e)}")
+
+
+@app.get("/records")
+def get_records(
+    limit: int = Query(50, ge=1, le=200, description="Max records to return"),
+    offset: int = Query(0, ge=0, description="Records to skip"),
+    api_key: str = Depends(get_api_key)
+):
+    """
+    Retrieve stored consultation records from the database.
+    
+    Returns a list of all processed consultations, ordered by most recent first.
+    
+    - **limit**: Max number of records to return (default: 50, max: 200)
+    - **offset**: Number of records to skip for pagination (default: 0)
+    """
+    try:
+        db = DatabaseManager()
+        records = db.get_all_records(limit=limit, offset=offset)
+        total = db.get_record_count()
+        db.close()
+        return {
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "records": records
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@app.get("/records/{record_id}")
+def get_record_by_id(
+    record_id: int,
+    api_key: str = Depends(get_api_key)
+):
+    """
+    Retrieve a single consultation record by its ID.
+    
+    - **record_id**: The database ID of the consultation record.
+    """
+    try:
+        db = DatabaseManager()
+        record = db.get_record_by_id(record_id)
+        db.close()
+        if record is None:
+            raise HTTPException(status_code=404, detail=f"Record with ID {record_id} not found.")
+        return record
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")

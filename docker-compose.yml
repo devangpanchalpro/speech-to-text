@@ -1,4 +1,22 @@
 services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: voice_to_rx
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d voice_to_rx"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   # FastAPI Server
   api:
     build: .
@@ -11,4 +29,15 @@ services:
       - SARVAM_API_KEY=${SARVAM_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - APP_API_KEY=${APP_API_KEY}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=voice_to_rx
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+    depends_on:
+      db:
+        condition: service_healthy
     command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+
+volumes:
+  postgres_data:

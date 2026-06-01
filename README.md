@@ -3,14 +3,14 @@
 An enhanced audio processing pipeline for transcribing multilingual conversations, identifying speaker roles (Doctor/Patient), extracting names, and generating HMIS-compatible JSON.
 
 ## Features
--   **Multi-format Support**: Process mp3, mp4, ogg, wav, m4a, etc. (Automatic conversion to mp3).
+-   **Multi-format Support**: Process mp3, mp4, ogg, wav, m4a, opus, etc. (Automatic conversion to mp3).
 -   **High-Accuracy Transcription**: Powered by Sarvam AI's Saaras:v3 model.
 -   **Speaker & Role Identification**: Identifies "Doctor" and "Patient" using conversation context and name extraction.
 -   **HMIS JSON Output**: Directly outputs JSON compatible with the HMIS website API format.
 -   **FastAPI Server**: Production-ready REST API with API key authentication.
 
 ## Project Structure
--   `audio_files/`: Put your input audio files here (mp3, mp4, ogg, etc.).
+-   `audio_files/`: Put your input audio files here (mp3, mp4, ogg, opus, etc.).
 -   `outputs/`: JSON results will be saved here.
 -   `src/audio/`: Audio conversion logic (requires FFmpeg).
 -   `src/stt/`: Sarvam AI Client.

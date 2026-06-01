@@ -4,6 +4,7 @@ from src.audio.audio_processor import AudioProcessor
 from src.stt.sarvam_client import SarvamClient
 from src.analysis.role_identifier import RoleIdentifier
 from src.analysis.casesheet_extractor import CasesheetExtractor
+from src.database.db_manager import DatabaseManager
 
 # Directory setup
 INPUT_DIR = "audio_files"
@@ -143,6 +144,23 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
             json.dump(result, f, indent=4, ensure_ascii=False)
             
         print(f"\n✅ Pipeline complete! Final result saved to {output_path}")
+
+        # 7. Save to PostgreSQL Database
+        print("\n" + "="*50)
+        print("🗄️ STAGE 7: Saving to Database")
+        print("="*50)
+        try:
+            db = DatabaseManager()
+            db.initialize_db()
+            record_id = db.insert_record(result)
+            if record_id:
+                print(f"✅ Record saved to PostgreSQL with ID: {record_id}")
+            else:
+                print("⚠️ Database insert returned no ID. Data saved locally only.")
+            db.close()
+        except Exception as e:
+            print(f"⚠️ Database save failed (data is still saved locally): {e}")
+
         print("="*50)
         print(f"👨‍⚕️ Doctor: {identification['doctor']['name']}")
         print(f"🏥 Patient: {identification['patient']['name']}")
