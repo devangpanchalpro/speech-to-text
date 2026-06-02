@@ -151,11 +151,10 @@ class CasesheetExtractor:
         # Create extraction prompt
         prompt = self._create_extraction_prompt(transcript, conversation_text, doctor_name, patient_name)
 
-        # Try models in fallback order
+        # Try models in fallback order (strictly free-tier models)
         models_to_try = [
             "gemini-2.5-flash",
             "gemini-2.0-flash",
-            "gemini-2.0-flash-lite",
         ]
 
         for model_name in models_to_try:

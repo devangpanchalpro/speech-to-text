@@ -1,10 +1,14 @@
 import os
 import json
+from dotenv import load_dotenv
 from src.audio.audio_processor import AudioProcessor
 from src.stt.sarvam_client import SarvamClient
 from src.analysis.role_identifier import RoleIdentifier
 from src.analysis.casesheet_extractor import CasesheetExtractor
 from src.database.db_manager import DatabaseManager
+
+# Load environment variables
+load_dotenv()
 
 # Directory setup
 INPUT_DIR = "audio_files"
@@ -54,9 +58,9 @@ def process_audio_pipeline(audio_filename, api_key=None, gemini_api_key=None, la
             print("❌ Transcription failed.")
             return None
             
-        # Ensure empty string from UI counts as None
+        # Ensure empty string from UI counts as None, and fallback to env
         if not gemini_api_key:
-            gemini_api_key = None
+            gemini_api_key = os.environ.get("GEMINI_API_KEY") or None
 
         # 3. Translation (Source to English) — Do this FIRST so English text is available for all later stages
         print("\n" + "="*50)

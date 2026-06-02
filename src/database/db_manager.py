@@ -69,78 +69,159 @@ class DatabaseManager:
             print(f"❌ Database initialization error: {e}")
             raise
 
+    def resequence_records(self):
+        """
+        Re-sequence all IDs in the table to be strictly sequential (1, 2, 3, ...)
+        based on their creation order (created_at).
+        """
+        conn = self._get_connection()
+        try:
+            with conn.cursor() as cur:
+                # Create a temporary table with the current records
+                cur.execute("CREATE TEMP TABLE temp_consultation_records AS SELECT * FROM consultation_records ORDER BY created_at ASC;")
+                # Truncate the main table
+                cur.execute("TRUNCATE TABLE consultation_records;")
+                # Re-insert records with new sequential IDs
+                cur.execute(
+                    """
+                    INSERT INTO consultation_records 
+                    (id, original_file, processed_file, detected_language, 
+                     doctor_name, patient_name, transcript, transcript_english, 
+                     identification, hmis_data, created_at)
+                    SELECT 
+                        row_number() OVER (ORDER BY created_at ASC) as id,
+                        original_file, processed_file, detected_language, 
+                        doctor_name, patient_name, transcript, transcript_english, 
+                        identification, hmis_data, created_at
+                    FROM temp_consultation_records;
+                    """
+                )
+                # Drop temp table
+                cur.execute("DROP TABLE temp_consultation_records;")
+            conn.commit()
+            print("✅ Database IDs successfully re-sequenced sequentially.")
+        except Exception as e:
+            conn.rollback()
+            print(f"❌ Database re-sequencing failed: {e}")
+
     def insert_record(self, result: Dict) -> Optional[int]:
         """
-        Insert a pipeline result into the consultation_records table.
-
-        Args:
-            result: The full pipeline result dictionary containing:
-                - metadata (original_file, processed_file, detected_language)
-                - transcript, transcript_english
-                - identification (doctor/patient info)
-                - hmis (HMIS-formatted data)
-
-        Returns:
-            The ID of the inserted record, or None on failure.
+        Insert or update a pipeline result in the consultation_records table.
+        If a record with the same original_file already exists, it is updated.
         """
         conn = self._get_connection()
 
         metadata = result.get("metadata", {})
+        original_file = metadata.get("original_file", "")
         identification = result.get("identification", {})
         hmis_data = result.get("hmis", {})
 
         try:
             with conn.cursor() as cur:
-                # Find the lowest available ID (filling any gaps from deletions, starting from 1)
+                # 1. Check if record already exists by original_file name
                 cur.execute(
-                    """
-                    SELECT COALESCE(
-                        (
-                            SELECT MIN(gap.id)
-                            FROM (
-                                SELECT 1 AS id
-                                UNION ALL
-                                SELECT id + 1 FROM consultation_records
-                            ) gap
-                            WHERE gap.id NOT IN (SELECT id FROM consultation_records)
-                        ),
-                        1
-                    );
-                    """
+                    "SELECT id FROM consultation_records WHERE original_file = %s;",
+                    (original_file,)
                 )
-                next_id = cur.fetchone()[0]
+                existing = cur.fetchone()
 
-                cur.execute(
-                    """
-                    INSERT INTO consultation_records 
-                        (id, original_file, processed_file, detected_language,
-                         doctor_name, patient_name,
-                         transcript, transcript_english,
-                         identification, hmis_data)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    RETURNING id;
-                    """,
-                    (
-                        next_id,
-                        metadata.get("original_file", ""),
-                        metadata.get("processed_file", ""),
-                        metadata.get("detected_language", ""),
-                        identification.get("doctor", {}).get("name", "Unknown"),
-                        identification.get("patient", {}).get("name", "Unknown"),
-                        result.get("transcript", ""),
-                        result.get("transcript_english", ""),
-                        Json(identification),
-                        Json(hmis_data),
-                    ),
-                )
-                record_id = cur.fetchone()[0]
+                if existing:
+                    record_id = existing[0]
+                    # Update the existing record
+                    cur.execute(
+                        """
+                        UPDATE consultation_records 
+                        SET processed_file = %s,
+                            detected_language = %s,
+                            doctor_name = %s,
+                            patient_name = %s,
+                            transcript = %s,
+                            transcript_english = %s,
+                            identification = %s,
+                            hmis_data = %s,
+                            created_at = CURRENT_TIMESTAMP
+                        WHERE id = %s
+                        RETURNING id;
+                        """,
+                        (
+                            metadata.get("processed_file", ""),
+                            metadata.get("detected_language", ""),
+                            identification.get("doctor", {}).get("name", "Unknown"),
+                            identification.get("patient", {}).get("name", "Unknown"),
+                            result.get("transcript", ""),
+                            result.get("transcript_english", ""),
+                            Json(identification),
+                            Json(hmis_data),
+                            record_id,
+                        ),
+                    )
+                    record_id = cur.fetchone()[0]
+                    print(f"🔄 Existing record updated in database with ID: {record_id}")
+                else:
+                    # Find the lowest available ID (filling any gaps from deletions, starting from 1)
+                    cur.execute(
+                        """
+                        SELECT COALESCE(
+                            (
+                                SELECT MIN(gap.id)
+                                FROM (
+                                    SELECT 1 AS id
+                                    UNION ALL
+                                    SELECT id + 1 FROM consultation_records
+                                ) gap
+                                WHERE gap.id NOT IN (SELECT id FROM consultation_records)
+                            ),
+                            1
+                        );
+                        """
+                    )
+                    next_id = cur.fetchone()[0]
+
+                    # Insert new record
+                    cur.execute(
+                        """
+                        INSERT INTO consultation_records 
+                            (id, original_file, processed_file, detected_language,
+                             doctor_name, patient_name,
+                             transcript, transcript_english,
+                             identification, hmis_data)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id;
+                        """,
+                        (
+                            next_id,
+                            original_file,
+                            metadata.get("processed_file", ""),
+                            metadata.get("detected_language", ""),
+                            identification.get("doctor", {}).get("name", "Unknown"),
+                            identification.get("patient", {}).get("name", "Unknown"),
+                            result.get("transcript", ""),
+                            result.get("transcript_english", ""),
+                            Json(identification),
+                            Json(hmis_data),
+                        ),
+                    )
+                    record_id = cur.fetchone()[0]
+                    print(f"✅ Record saved to database with ID: {record_id}")
+
             conn.commit()
-            print(f"✅ Record saved to database with ID: {record_id}")
-            return record_id
+
+            # 2. Resequence the database to keep all IDs strictly sequential and gapless
+            self.resequence_records()
+
+            # Find the new ID of this file after re-sequencing
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id FROM consultation_records WHERE original_file = %s;",
+                    (original_file,)
+                )
+                final_id = cur.fetchone()[0]
+
+            return final_id
 
         except Exception as e:
             conn.rollback()
-            print(f"❌ Database insert error: {e}")
+            print(f"❌ Database insert/update error: {e}")
             return None
 
     def get_all_records(self, limit: int = 50, offset: int = 0) -> List[Dict]:

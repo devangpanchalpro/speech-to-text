@@ -26,10 +26,11 @@ app = FastAPI(
 # ─── Database initialization on startup ───
 @app.on_event("startup")
 def startup_db():
-    """Initialize the database table on application startup."""
+    """Initialize and re-sequence the database table on application startup."""
     try:
         db = DatabaseManager()
         db.initialize_db()
+        db.resequence_records()
         db.close()
     except Exception as e:
         print(f"⚠️ Database startup warning: {e}")
